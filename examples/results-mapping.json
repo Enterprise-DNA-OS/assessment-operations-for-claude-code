@@ -1,0 +1,9 @@
+{
+  "code": "Result ID",
+  "assessment": "Assessment ID",
+  "participant": "Participant ID",
+  "finished": "Date/Time finished",
+  "score": "Total score",
+  "maximum": "Maximum score",
+  "outcome": "Outcome label"
+}

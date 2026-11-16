@@ -1,13 +1,38 @@
 [
   {
-    "name": "week",
-    "title": "This week",
-    "subtitle": "Assessment Operations for Claude Code: what needs attention, rendered by npm run view",
+    "name": "assessment-week",
+    "title": "Assessment office this week",
+    "subtitle": "Read-only working view. Review the evidence before making a decision.",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Assessment readiness",
+        "sql": "select code,name,due_date,questions,question_gaps,missing_marks from assessment_readiness order by due_date"
+      },
+      {
+        "title": "Results awaiting review",
+        "sql": "select code,assessment,participant,percent,moderation from result_board where moderation<>'accepted' order by code"
+      },
+      {
+        "title": "Overdue follow-up",
+        "sql": "select code,name,owner,due_date from actions where status='open' and due_date<current_date order by due_date"
+      }
+    ]
+  },
+  {
+    "name": "evidence",
+    "title": "Evidence and validation",
+    "sections": [
+      {
+        "title": "Recorded checks",
+        "sql": "select * from compliance_findings order by rule,record"
+      },
+      {
+        "title": "Validation plan",
+        "sql": "select code,name,due_date,decision,risk_note from validation_status order by due_date"
+      },
+      {
+        "title": "Topic coverage",
+        "sql": "select assessment,topic,min_marks,available_marks,missing_marks from blueprint_coverage order by assessment,topic"
       }
     ]
   }

@@ -1,11 +1,71 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
-    "file": "name",
+    "name": "assessment-paper",
+    "title": "Draft assessment paper",
+    "for_each": "select id,code from assessments order by code",
+    "file": "code",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Staff readiness check",
+        "note": "Draft for staff review. Resolve readiness gaps before issuing. No answer key is included.",
+        "sql": "select code,name,due_date,questions,question_gaps,missing_marks from assessment_readiness where id=$1",
+        "layout": "record"
+      },
+      {
+        "title": "Candidate questions",
+        "sql": "select i.position,q.prompt,q.max_score from assessment_items i join questions q on q.id=i.question_id where i.assessment_id=$1 order by i.position"
+      }
+    ]
+  },
+  {
+    "name": "marking-guide",
+    "title": "Confidential marking guide",
+    "for_each": "select id,code from assessments order by code",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Marking criteria",
+        "note": "Staff only. Keep separate from candidate papers.",
+        "sql": "select i.position,q.code,q.prompt,q.rubric,q.max_score,q.revision from assessment_items i join questions q on q.id=i.question_id where i.assessment_id=$1 order by i.position"
+      }
+    ]
+  },
+  {
+    "name": "moderation-pack",
+    "title": "Assessment moderation pack",
+    "for_each": "select id,code from assessments order by code",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Results",
+        "note": "A score threshold is not a competency decision. Evidence needs human review.",
+        "sql": "select r.code,r.participant,r.cohort,r.percent,r.score_band,r.moderation from result_board r join assessments a on a.code=r.assessment where a.id=$1 order by r.code"
+      },
+      {
+        "title": "Evidence decisions",
+        "sql": "select t.code,m.reviewer,m.decision,m.validity,m.sufficiency,m.authenticity,m.currency,m.evidence,m.created_at from moderations m join attempts t on t.id=m.attempt_id where t.assessment_id=$1 order by m.created_at"
+      }
+    ]
+  },
+  {
+    "name": "validation-record",
+    "title": "Validation planning record",
+    "for_each": "select id,code from programmes order by code",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Plan",
+        "sql": "select code,name,owner,due_date,decision,risk_note from validation_status where id=$1",
+        "layout": "record"
+      },
+      {
+        "title": "Validation history",
+        "sql": "select reviewer,credentials,evidence,decision,next_due,created_at from validations where programme_id=$1 order by created_at"
+      },
+      {
+        "title": "Follow-up",
+        "sql": "select code,name,owner,due_date,status,closure_note from actions where programme_id=$1 order by due_date"
+      }
     ]
   }
 ]
